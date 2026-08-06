@@ -356,6 +356,7 @@ function replenishQueue() {
 
 // Takes the split up raw events array and turns them into the objects needed for the queue
 async function parseEvents() {
+  all_events = []; // Clear before repopulating
   split_raw_events.forEach((event) => {
     let at = event.match(/^DTSTART:.*$/gm);
     let loc = event.match(/^LOCATION:.*$/gm);
@@ -396,6 +397,7 @@ async function updateInfo() {
   const res = await fetch(await bridge.getLocalStorage("CALENDAR_URL"));
   const text = await res.text();
   if (text.includes("BEGIN:VCALENDAR")) {
+	split_raw_events = []; // Clear before repopulating
     let temp = text.split("BEGIN:VEVENT");
     temp.forEach((event) => {
       split_raw_events.push(
