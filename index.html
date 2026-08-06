@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    <title>Eurofurence HUD</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #006666;
+        color: #E5E5E5;
+        font: 14px/1.4 -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        touch-action: manipulation;
+        -webkit-text-size-adjust: 100%;
+        overscroll-behavior: none;
+      }
+	  #logo {
+	    width: 100%;
+		height: 300px;
+		object-fit: contain;
+	  }
+      #app {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        box-sizing: border-box;
+        text-align: center;
+      }
+	  #url-container {
+	    width: 100%;
+		display: flex;
+	  }
+	  #url {
+	  	background: white;
+		color: black;
+		border: none;
+		flex-grow: 1;
+		padding: 0.75em;
+		margin: 0.5em 0 0.5em 0.5em;
+		border-radius: 0.5em;
+	  }
+	  #sync {
+	    background: black;
+		color: white;
+		border: none;
+		margin: 0.5em;
+		border-radius: 0.5em;
+	  }
+	  #results {
+	    padding-top: 2em;
+	  }
+	  p {
+	    text-align: center;
+	    padding: 0;
+		margin: 0;
+	  }
+    </style>
+  </head>
+  <body>
+  	<script type="module" src="/src/main.ts"></script>
+    <img id="logo" src="/assets/ef30.png">
+    <div id="app">
+	  This app shows you the next up favorite events on that same con day.<br>
+	  By default up to 3 events are shown, if you swipe you can enter/exit compact mode (which only shows one).<br>
+	  The UI auto-dims after 3 minutes, to brighten it up single tap the glasses.<br>
+	  <br><br>
+	  Open the Eurofurence app, go to Settings and paste the calendar sync link below:
+	</div>
+	<div id="url-container">
+	  <input id="url" type="text" name="url" placeholder="https://app.eurofurence.org/EF30/Api/Events/Favorites/calendar.ics/?token=..." required></input>
+	  <button id="sync">Sync & Save</button>
+	</div>
+	<div id="results">
+	  <p id="results_last_sync">Last sync (every 30 mins): never</p>
+	  <p id="results_last_render">Last render (every minute): never</p>
+	  <br><br>
+	  <p>Made with love by Fynnley from EFNOC!</p>
+	</div>
+  </body>
+</html>

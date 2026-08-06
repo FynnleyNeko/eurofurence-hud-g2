@@ -1,0 +1,9 @@
+# Ignore build output
+dist
+
+# Ignore node modules
+node_modules
+package-lock.json
+
+# Don't push over the license unless forced
+LICENSE
