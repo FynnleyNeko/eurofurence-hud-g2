@@ -48,7 +48,7 @@ export async function render() {
 }
 
 // Renders the full resolution UI to a single canvas
-function draw_canvas(width, height) {
+function draw_canvas() {
   const canvas = document.createElement("canvas");
   canvas.width = 576;
   canvas.height = 288;
@@ -160,12 +160,12 @@ function draw_canvas(width, height) {
     : constants.THEME_BRIGHT_PRIMARY;
   ctx.textAlign = "right";
   ctx.font = "15px sans-serif";
-  ctx.fillText(`${getClock()}`, width, 15);
+  ctx.fillText(`${getClock()}`, canvas.width, 15);
   if (globals.compact_mode > 0) {
     ctx.fillStyle = globals.dimmed_mode
       ? constants.THEME_DARK_SECONDARY
       : constants.THEME_BRIGHT_PRIMARY;
-    ctx.fillText(`${getDay()}`, width, 30);
+    ctx.fillText(`${getDay()}`, canvas.width, 30);
 
     // Draw event schedule graphic
     if (globals.events.length >= 3) ctx.drawImage(constants.IMG_ARROW3, 60, 0);
@@ -173,18 +173,18 @@ function draw_canvas(width, height) {
     if (globals.events.length === 1) ctx.drawImage(constants.IMG_ARROW1, 60, 0);
 
     // Draw EF logo
-    ctx.drawImage(constants.IMG_LOGO, width - 32, 35);
+    ctx.drawImage(constants.IMG_LOGO, canvas.width - 32, 35);
 
     // Draw sync failure warning
     if (!globals.last_sync_worked)
-      ctx.drawImage(constants.WARN_SYNC, width - 64, 35);
+      ctx.drawImage(constants.WARN_SYNC, canvas.width - 64, 35);
 
     // Dim image areas to half luminance
     ctx.fillStyle = globals.dimmed_mode
       ? `rgba(0,0,0,${constants.THEME_DARK_IMAGES})`
       : `rgba(0,0,0,${constants.THEME_BRIGHT_IMAGES})`;
     if (globals.events.length > 0) ctx.fillRect(60, 0, 15, 90); // arrows
-    ctx.fillRect(width - 64, 35, 64, 32); // ef logo
+    ctx.fillRect(canvas.width - 64, 35, 64, 32); // ef logo
   }
 
   // Additional event info wip
@@ -222,10 +222,15 @@ function draw_canvas(width, height) {
     ctx.fillStyle = globals.dimmed_mode
       ? `rgba(0,0,0,${constants.THEME_DARK_IMAGES})`
       : `rgba(0,0,0,${constants.THEME_BRIGHT_IMAGES})`;
-    ctx.fillRect(0, 288 - constants.UI_HEIGHT_BOT, 27, constants.UI_HEIGHT_BOT); // left
     ctx.fillRect(
-      width - 27,
-      288 - constants.UI_HEIGHT_BOT,
+      0,
+      canvas.height - constants.UI_HEIGHT_BOT,
+      27,
+      constants.UI_HEIGHT_BOT,
+    ); // left
+    ctx.fillRect(
+      canvas.width - 27,
+      canvas.height - constants.UI_HEIGHT_BOT,
       27,
       constants.UI_HEIGHT_BOT,
     );

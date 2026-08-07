@@ -1,6 +1,5 @@
 import { globals } from "./globals.ts";
 import { constants } from "./constants.ts";
-import { bridge } from "./evenrealities.ts";
 import { setFromBridge } from "./phone.ts";
 import { render } from "./renderer.ts";
 import { updateInfo } from "./calendar.ts";
