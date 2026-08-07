@@ -15,7 +15,28 @@ function hasAccess(audience: Audience[]) {
   });
 }
 
-function venueInfo(events: EurofurenceEvent[]) {
+function mergeSpans(accessible: EurofurenceEvent[]) {
+  let sorted = [...accessible].sort(
+    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+  );
+
+  let spans: { start: number; end: number }[] = [];
+  for (let event of sorted) {
+    let start = new Date(event.start).getTime();
+    let end = new Date(event.end).getTime();
+    let last = spans[spans.length - 1];
+
+    if (last && start <= last.end) {
+      last.end = Math.max(last.end, end);
+    } else {
+      spans.push({ start, end });
+    }
+  }
+
+  return spans;
+}
+
+function venueInfo(events: EurofurenceEvent[], showTitleWhenOpen = false) {
   let accessible = events.filter((event) => hasAccess(event.audience));
 
   let current = accessible.find(
@@ -23,7 +44,15 @@ function venueInfo(events: EurofurenceEvent[]) {
       globals.now.getTime() >= new Date(event.start).getTime() &&
       globals.now.getTime() < new Date(event.end).getTime(),
   );
-  if (current) return "open";
+  if (current) {
+    if (showTitleWhenOpen) return current.title;
+
+    let span = mergeSpans(accessible).find(
+      (span) =>
+        globals.now.getTime() >= span.start && globals.now.getTime() < span.end,
+    );
+    return "open (" + datefuzzy(new Date(span.end)) + ")";
+  }
 
   let day_end = new Date(
     globals.now.getFullYear(),
@@ -72,15 +101,15 @@ export function vrPortalInfo() {
 
 // Returns text info about the CCH club stages current status
 export function cchClubInfo() {
-  return venueInfo(eurofurenceSchedule.cchClub);
+  return venueInfo(eurofurenceSchedule.cchClub, true);
 }
 
 // Returns text info about the outside stages current status
 export function outsideClubInfo() {
-  return venueInfo(eurofurenceSchedule.outsideClub);
+  return venueInfo(eurofurenceSchedule.outsideClub, true);
 }
 
 // Returns text info about the Coda Clubs current status
 export function codaClubInfo() {
-  return venueInfo(eurofurenceSchedule.codaClub);
+  return venueInfo(eurofurenceSchedule.codaClub, true);
 }
