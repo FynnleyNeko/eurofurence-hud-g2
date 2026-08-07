@@ -61,7 +61,7 @@ const bright = new ImageContainerProperty({
 });
 
 // Send initial UI
-const initial_ui = await bridge.createStartUpPageContainer(
+await bridge.createStartUpPageContainer(
   new CreateStartUpPageContainer({
     containerTotalNum: 1,
     textObject: [text],
@@ -72,7 +72,6 @@ const initial_ui = await bridge.createStartUpPageContainer(
 // Init input listener
 const event_listener = bridge.onEvenHubEvent((event) => {
   const sysType = event.sysEvent?.eventType ?? null;
-  const textType = event.textEvent?.eventType ?? null;
 
   // Tap to undim the UI for 3 minutes
   if (event.jsonData?.eventType === undefined) {
