@@ -2,6 +2,7 @@ import { globals } from "./globals.ts";
 import { constants } from "./constants.ts";
 import { bridge } from "./evenrealities.ts";
 import { render } from "./renderer.ts";
+import { sync_stats } from "./phone.ts";
 
 // Handles filling the displayed events queue recursively from the raw event data
 export function replenishQueue() {
@@ -72,16 +73,22 @@ export async function parseEvents() {
       queued: false,
     });
   });
-  document.getElementById("results_last_sync").innerText =
-    `Last sync (every 30 mins): ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} (${globals.all_events.length} Events)`;
 
+  sync_stats(globals.all_events.length);
   replenishQueue();
   render();
 }
 
 // Fetches the calendar from Euforuence backend and splits+filters them into a preliminary unformatted array
 export async function updateInfo() {
-  const res = await fetch(await bridge.getLocalStorage("CALENDAR_URL"));
+  var res;
+
+  try {
+    res = await fetch(await bridge.getLocalStorage("CALENDAR_URL"));
+  } catch (e) {
+    globals.last_sync_worked = false;
+    return;
+  }
 
   if (!res.ok) {
     globals.last_sync_worked = false;

@@ -11,7 +11,6 @@ import {
 import { globals } from "./globals.ts";
 import { constants } from "./constants.ts";
 import { render } from "./renderer.ts";
-import { updateInfo } from "./calendar.ts";
 
 export const bridge = await waitForEvenAppBridge();
 

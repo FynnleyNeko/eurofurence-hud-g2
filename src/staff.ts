@@ -31,7 +31,7 @@ export function staff_init(key) {
     G2pager(
       `${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} WebSocket failure, retrying...`,
     );
-    reconnect_timer = setTimeout(staff_init, constants.STAFF_RETRY_TIME);
+    reconnect_timer = setTimeout(staff_init, constants.STAFF_RETRY_TIME, key);
   });
 
   // On WebSocket message put it on the pager area immediately
@@ -41,8 +41,9 @@ export function staff_init(key) {
       input = JSON.parse(e.data);
     } catch (e) {
       websocket.send('{"status":"malformed"}');
+      return;
     }
-    if (input.message !== undefined) {
+    if (input?.message !== undefined) {
       G2pager(input.message);
       websocket.send('{"status":"received"}');
     } else {
@@ -53,10 +54,9 @@ export function staff_init(key) {
   ran_before = true;
 }
 
-export function staff_stop() {
-  if (ran_before) websocket.close();
-
+export function staff_stop() {	
   G2pager("");
+  if (ran_before) websocket.close();
 
   clearTimeout(reconnect_timer);
   clearInterval(pingInterval);

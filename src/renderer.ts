@@ -3,6 +3,7 @@ import { constants } from "./constants.ts";
 import { sendToG2 } from "./evenrealities.ts";
 import { getDay, getClock, canvasToPng, datefuzzy } from "./util.ts";
 import { replenishQueue } from "./calendar.ts";
+import { render_timings } from "./phone.ts";
 import {
   artistsLoungeInfo,
   artShowInfo,
@@ -60,8 +61,7 @@ export async function render() {
   globals.dimmed_mode_cur = globals.dimmed_mode;
 
   const render_end = new Date();
-  document.getElementById("results_last_render").innerText =
-    `Last render (every minute): ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} (${render_end.getTime() - render_start.getTime()} ms)`;
+  render_timings(render_start, render_end);
 }
 
 // Renders the full resolution UI to a single canvas

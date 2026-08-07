@@ -37,6 +37,16 @@ export async function setFromBridge() {
   }
 }
 
+export function render_timings(start, end) {
+  document.getElementById("results_last_render").innerText =
+    `Last render (every minute): ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} (${end.getTime() - start.getTime()} ms)`;
+}
+
+export function sync_stats(count) {
+  document.getElementById("results_last_sync").innerText =
+    `Last sync (every 30 mins): ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} (${count} Events)`;
+}
+
 // Register listener for "sync & save" button
 document.getElementById("sync").addEventListener("click", function (event) {
   if (
