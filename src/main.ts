@@ -692,7 +692,7 @@ document
       document.querySelector<HTMLInputElement>("#attendee_type").value,
     );
     attendee_type =
-      document.querySelector<HTMLInputElement>("#attendee_type").value;
+      Number(document.querySelector<HTMLInputElement>("#attendee_type").value);
   });
 
 // Register listener for staff mode init button
@@ -742,7 +742,7 @@ async function setFromBridge() {
   if (restored_attendee_type !== "") {
     document.querySelector<HTMLInputElement>("#attendee_type").value =
       restored_attendee_type;
-    attendee_type = restored_attendee_type;
+    attendee_type = Number(restored_attendee_type);
   }
 }
 

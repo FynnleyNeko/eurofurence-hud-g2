@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "pack": "evenhub pack app.json dist -o eurofurence-hud.ehpk",
+	"qr": "evenhub qr --url \"http://localhost:5173\"",
     "simulate": "evenhub-simulator http://localhost:5173",
 	"format": "prettier --write \"./**/*.{js,ts,html}\""
   },
