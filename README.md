@@ -1,6 +1,6 @@
 # Eurofurence HUD for Even G2
 
-![Demo screen](/assets/readme/header.png?raw=true)
+![Demo screen](/readme/header.png?raw=true)
 
 Simple HUD to display your favorited events from the Eurofurence app on your glasses, via the calendar sync URL found in Settings.
 
@@ -15,7 +15,7 @@ Auto-dims after 3 minutes and can be brought back to full brightness with a simp
 
 ## Usage
 
-![Demo screen](/assets/readme/screenshot.jpg?raw=true)
+![Demo screen](/readme/screenshot.jpg?raw=true)
 
 1. Open the Eurofurence app
 2. Log into your account and favorite some events
