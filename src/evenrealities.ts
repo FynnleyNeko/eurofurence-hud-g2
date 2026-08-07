@@ -75,7 +75,7 @@ const event_listener = bridge.onEvenHubEvent((event) => {
   const textType = event.textEvent?.eventType ?? null;
 
   // Tap to undim the UI for 3 minutes
-  if (event.jsonData.eventType === undefined) {
+  if (event.jsonData?.eventType === undefined) {
     if (globals.dimmed_mode) {
       globals.dimmed_mode = false;
       setTimeout(() => {
@@ -91,7 +91,7 @@ const event_listener = bridge.onEvenHubEvent((event) => {
   }
 
   // Swipe up to decrease detail level
-  if (event.jsonData.eventType === 1) {
+  if (event.jsonData?.eventType === 1) {
     if (globals.compact_mode > 0) globals.compact_mode--;
     if (globals.compact_mode !== globals.compact_mode_cur) {
       render();
@@ -100,7 +100,7 @@ const event_listener = bridge.onEvenHubEvent((event) => {
   }
 
   // Swipe down to increase detail level
-  if (event.jsonData.eventType === 2) {
+  if (event.jsonData?.eventType === 2) {
     if (globals.compact_mode < 2) globals.compact_mode++;
     if (globals.compact_mode !== globals.compact_mode_cur) {
       render();
@@ -109,7 +109,7 @@ const event_listener = bridge.onEvenHubEvent((event) => {
   }
 
   // Double click to summon exit modal
-  if (event.jsonData.eventType === 3) {
+  if (event.jsonData?.eventType === 3) {
     bridge.shutDownPageContainer(1);
     return;
   }
@@ -123,7 +123,7 @@ const event_listener = bridge.onEvenHubEvent((event) => {
 });
 
 // Send message text into the pager area
-export async function G2pager(message) {
+export async function G2pager(message: string) {
   return bridge.textContainerUpgrade(
     new TextContainerUpgrade({
       containerID: 1,
@@ -134,8 +134,8 @@ export async function G2pager(message) {
 }
 
 // Send image quadrants onto the display
-export async function sendToG2(quadrants) {
-  var promise;
+export async function sendToG2(quadrants: number[][]) {
+  let promise: Promise<unknown>;
 
   if (quadrants.length > 2) {
     promise = Promise.all([

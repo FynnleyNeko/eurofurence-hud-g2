@@ -1,3 +1,11 @@
+// A single favorited/queued calendar event as parsed from the iCal feed
+export interface CalEvent {
+  at: Date;
+  loc: string;
+  name: string;
+  queued: boolean;
+}
+
 export var globals = {
   // Attendee type info
   // 0 : Attendee
@@ -17,9 +25,9 @@ export var globals = {
   dimmed_mode_cur: true,
 
   // Event storage
-  split_raw_events: [],
-  all_events: [],
-  events: [],
+  split_raw_events: [] as string[],
+  all_events: [] as CalEvent[],
+  events: [] as CalEvent[],
 
   // Current time
   now: new Date(),

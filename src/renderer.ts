@@ -253,10 +253,13 @@ function draw_canvas() {
 }
 
 // Divide main canvas into quadrants
-function quadrantize(where, fullCanvas) {
+function quadrantize(
+  where: "tl" | "tr" | "bl" | "br",
+  fullCanvas: HTMLCanvasElement,
+): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = constants.UI_WIDTH / 2;
-  if (where.startsWith("t")) {
+  if (where === "tl" || where === "tr") {
     canvas.height = constants.UI_HEIGHT;
   } else {
     canvas.height = constants.UI_HEIGHT_BOT;
