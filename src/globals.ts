@@ -6,9 +6,6 @@ export var globals = {
   // 3 : SuperSponsor
   attendee_type: 0,
 
-  // staff system related keys
-  staff_key: undefined,
-
   // warning related states
   last_sync_worked: false,
   api_key_set: false,

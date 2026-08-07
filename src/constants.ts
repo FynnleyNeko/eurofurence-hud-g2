@@ -19,6 +19,8 @@ export const constants = {
   THEME_DARK_SECONDARY: "#444",
   THEME_DARK_IMAGES: 0.9,
   STAFF_PING_URL: "wss://efhudstaff.cub.pink/",
+  STAFF_RETRY_TIME: 15 * 1000,
+  STAFF_PING_TIME: 60 * 1000,
 
   // Image assets
   IMG_ARROW1: imageFromURL("/assets/arrow1.png"),

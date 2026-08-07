@@ -27,7 +27,7 @@ export async function setFromBridge() {
       .querySelector<HTMLInputElement>("#staffkey")
       .value.startsWith("ef-skey-")
   )
-    staff_init();
+    staff_init(document.querySelector<HTMLInputElement>("#staffkey").value);
 
   const restored_attendee_type = await bridge.getLocalStorage("ATTENDEE_TYPE");
   if (restored_attendee_type !== "") {
@@ -81,6 +81,6 @@ document
         "STAFF_KEY",
         document.querySelector<HTMLInputElement>("#staffkey").value,
       );
-      staff_init();
+      staff_init(document.querySelector<HTMLInputElement>("#staffkey").value);
     }
   });

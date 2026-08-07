@@ -36,7 +36,7 @@ export async function render() {
   // Lower quadrants only have to be updated when they aren't invisible or need to be cleared
   if (
     globals.compact_mode_cur !== globals.compact_mode ||
-    globals.compact_mode >= 1
+    globals.compact_mode > 1
   ) {
     await sendToG2(
       await Promise.all([
