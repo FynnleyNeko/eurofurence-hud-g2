@@ -1,6 +1,6 @@
 import { bridge } from "./evenrealities.ts";
 import { globals } from "./globals.ts";
-import { staff_init } from "./staff.ts";
+import { staff_init, staff_stop } from "./staff.ts";
 import { updateInfo } from "./calendar.ts";
 
 // Remember previously input settings and auto-initialize with them
@@ -83,4 +83,10 @@ document
       );
       staff_init(document.querySelector<HTMLInputElement>("#staffkey").value);
     }
+  });
+
+document
+  .getElementById("staffstop")
+  .addEventListener("click", function (event) {
+    staff_stop();
   });
