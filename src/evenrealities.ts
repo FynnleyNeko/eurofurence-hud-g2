@@ -136,34 +136,56 @@ export async function G2pager(message) {
 
 // Send image quadrants onto the display
 export async function sendToG2(quadrants) {
-  return Promise.all([
-    bridge.updateImageRawData(
-      new ImageRawDataUpdate({
-        containerID: 2,
-        containerName: "tleft",
-        imageData: quadrants[0],
-      }),
-    ),
-    bridge.updateImageRawData(
-      new ImageRawDataUpdate({
-        containerID: 3,
-        containerName: "tright",
-        imageData: quadrants[1],
-      }),
-    ),
-    bridge.updateImageRawData(
-      new ImageRawDataUpdate({
-        containerID: 4,
-        containerName: "bleft",
-        imageData: quadrants[2],
-      }),
-    ),
-    bridge.updateImageRawData(
-      new ImageRawDataUpdate({
-        containerID: 5,
-        containerName: "bright",
-        imageData: quadrants[3],
-      }),
-    ),
-  ]);
+  var promise;
+
+  if (quadrants.length > 2) {
+    promise = Promise.all([
+      bridge.updateImageRawData(
+        new ImageRawDataUpdate({
+          containerID: 2,
+          containerName: "tleft",
+          imageData: quadrants[0],
+        }),
+      ),
+      bridge.updateImageRawData(
+        new ImageRawDataUpdate({
+          containerID: 3,
+          containerName: "tright",
+          imageData: quadrants[1],
+        }),
+      ),
+      bridge.updateImageRawData(
+        new ImageRawDataUpdate({
+          containerID: 4,
+          containerName: "bleft",
+          imageData: quadrants[2],
+        }),
+      ),
+      bridge.updateImageRawData(
+        new ImageRawDataUpdate({
+          containerID: 5,
+          containerName: "bright",
+          imageData: quadrants[3],
+        }),
+      ),
+    ]);
+  } else {
+    promise = Promise.all([
+      bridge.updateImageRawData(
+        new ImageRawDataUpdate({
+          containerID: 2,
+          containerName: "tleft",
+          imageData: quadrants[0],
+        }),
+      ),
+      bridge.updateImageRawData(
+        new ImageRawDataUpdate({
+          containerID: 3,
+          containerName: "tright",
+          imageData: quadrants[1],
+        }),
+      ),
+    ]);
+  }
+  return promise;
 }

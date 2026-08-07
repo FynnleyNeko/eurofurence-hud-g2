@@ -31,17 +31,33 @@ export async function render() {
     globals.events.shift();
     replenishQueue();
   }
-
   const fullrender = await draw_canvas();
 
-  await sendToG2(
-    await Promise.all([
-      canvasToPng(quadrantize("tl", fullrender)),
-      canvasToPng(quadrantize("tr", fullrender)),
-      canvasToPng(quadrantize("bl", fullrender)),
-      canvasToPng(quadrantize("br", fullrender)),
-    ]),
-  );
+  // Lower quadrants only have to be updated when they aren't invisible or need to be cleared
+  if (
+    globals.compact_mode_cur !== globals.compact_mode ||
+    globals.compact_mode >= 1
+  ) {
+    await sendToG2(
+      await Promise.all([
+        canvasToPng(quadrantize("tl", fullrender)),
+        canvasToPng(quadrantize("tr", fullrender)),
+        canvasToPng(quadrantize("bl", fullrender)),
+        canvasToPng(quadrantize("br", fullrender)),
+      ]),
+    );
+  } else {
+    await sendToG2(
+      await Promise.all([
+        canvasToPng(quadrantize("tl", fullrender)),
+        canvasToPng(quadrantize("tr", fullrender)),
+      ]),
+    );
+  }
+
+  // Show that we acted on globals
+  globals.compact_mode_cur = globals.compact_mode;
+  globals.dimmed_mode_cur = globals.dimmed_mode;
 
   const render_end = new Date();
   document.getElementById("results_last_render").innerText =
@@ -54,10 +70,6 @@ function draw_canvas() {
   canvas.width = 576;
   canvas.height = 288;
   const ctx = canvas.getContext("2d")!;
-
-  // Show that we acted on globals
-  globals.compact_mode_cur = globals.compact_mode;
-  globals.dimmed_mode_cur = globals.dimmed_mode;
 
   // Draw schedule times
   if (globals.compact_mode > 0) {

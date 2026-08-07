@@ -45,12 +45,12 @@ function venueInfo(events: EurofurenceEvent[], showTitleWhenOpen = false) {
       globals.now.getTime() < new Date(event.end).getTime(),
   );
   if (current) {
-
     let span = mergeSpans(accessible).find(
       (span) =>
         globals.now.getTime() >= span.start && globals.now.getTime() < span.end,
     );
-    if (showTitleWhenOpen) return `${current.title} (${datefuzzy(new Date(span.end))})`;
+    if (showTitleWhenOpen)
+      return `${current.title} (${datefuzzy(new Date(span.end))})`;
     return `open (${datefuzzy(new Date(span.end))})`;
   }
 

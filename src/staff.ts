@@ -1,5 +1,5 @@
+import { constants } from "./constants.ts";
+import { G2pager } from "./evenrealities.ts";
+
 // Staff functionality handler
-export function staff_init() {
-  // TODO websocket staff api
-  console.log("staff init reached");
-}
+export function staff_init() {}
