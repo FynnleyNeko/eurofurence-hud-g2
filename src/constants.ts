@@ -1,8 +1,4 @@
-function imageFromURL(src) {
-  const image = new Image();
-  image.src = src;
-  return image;
-}
+import { imageFromURL } from "./util.ts";
 
 export const constants = {
   // global config
