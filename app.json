@@ -8,9 +8,10 @@
   "entrypoint": "index.html",
   "permissions": [{
     "name": "network",
-    "desc": "Fetches favorite event calendar from Eurofurence backend.",
+    "desc": "Fetches favorite event calendar from Eurofurence backend and staff pings",
     "whitelist": [
-      "https://app.eurofurence.org"
+      "https://app.eurofurence.org",
+	  "wss://efhudstaff.cub.pink"
     ]
   }],
   "supported_languages": ["en"]
