@@ -125,11 +125,13 @@ const event_listener = bridge.onEvenHubEvent((event) => {
 
 // Send message text into the pager area
 export async function G2pager(message) {
-  return bridge.textContainerUpgrade(new TextContainerUpgrade({
-	  containerID: 1,
-	  containerName: "inputslave",
-	  content: message,
-  }));
+  return bridge.textContainerUpgrade(
+    new TextContainerUpgrade({
+      containerID: 1,
+      containerName: "inputslave",
+      content: message,
+    }),
+  );
 }
 
 // Send image quadrants onto the display
