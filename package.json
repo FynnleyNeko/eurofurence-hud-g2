@@ -1,7 +1,7 @@
 {
   "name": "eurofurence-hud",
   "private": true,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "pack": "evenhub pack app.json dist -o eurofurence-hud.ehpk",
     "simulate": "evenhub-simulator http://localhost:5173",
-	"format": "prettier --write \"{src,test}/**/*.{js,ts}\""
+	"format": "prettier --write \"./**/*.{js,ts,html}\""
   },
   "dependencies": {
     "@evenrealities/even_hub_sdk": "^0.0.10"

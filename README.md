@@ -4,7 +4,8 @@
 
 Simple HUD to display your favorited events from the Eurofurence app on your glasses, via the calendar sync URL found in Settings.
 
-Comes with 2 UI modes:
+Comes with 3 UI modes:
+- Extended -> Up to 3 events, status of clubs and other day-long events, time and current con day
 - Normal -> Up to 3 events shown in addition to time and current con day
 - Small -> Only the next up event and current time
 
@@ -55,7 +56,7 @@ Produces an `.ehpk` file.
 
 | File | Purpose |
 |---|---|
-| `/assets` | Folder containing assets, only ef30.png is used directly, the rest is baked into main.ts as base64 |
+| `/assets` | Folder containing assets |
 | `index.html` | Phone-side UI for entering calendar link |
 | `src/main.ts` | Application code / G2 view renderer. |
 | `app.json` | Even Hub manifest. |
