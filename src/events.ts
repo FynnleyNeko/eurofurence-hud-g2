@@ -25,8 +25,19 @@ function venueInfo(events: EurofurenceEvent[]) {
   );
   if (current) return "open";
 
+  let day_end = new Date(
+    globals.now.getFullYear(),
+    globals.now.getMonth(),
+    globals.now.getDate() + 1,
+    4,
+  );
+
   let upcoming = accessible
-    .filter((event) => new Date(event.start).getTime() > globals.now.getTime())
+    .filter(
+      (event) =>
+        new Date(event.start).getTime() > globals.now.getTime() &&
+        new Date(event.start).getTime() < day_end.getTime(),
+    )
     .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   if (upcoming.length > 0)
     return "in " + datefuzzy(new Date(upcoming[0].start));
