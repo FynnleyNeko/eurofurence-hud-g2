@@ -119,10 +119,20 @@ const event_listener = bridge.onEvenHubEvent((event) => {
     sysType === OsEventTypeList.SYSTEM_EXIT_EVENT ||
     sysType === OsEventTypeList.ABNORMAL_EXIT_EVENT
   ) {
-    unsubscribe();
+    event_listener();
   }
 });
 
+// Send message text into the pager area
+export async function G2pager(message) {
+  return bridge.textContainerUpgrade(new TextContainerUpgrade({
+	  containerID: 1,
+	  containerName: "inputslave",
+	  content: message,
+  }));
+}
+
+// Send image quadrants onto the display
 export async function sendToG2(quadrants) {
   return Promise.all([
     bridge.updateImageRawData(

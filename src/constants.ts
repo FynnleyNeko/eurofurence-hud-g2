@@ -2,7 +2,7 @@ import { imageFromURL } from "./util.ts";
 
 export const constants = {
   // global config
-  MOCK_TIME: "2026-08-19T12:14:00.000+02:00", // Set to a datestring to mock that time, leave empty for normal operation
+  MOCK_TIME: "", // Set to a datestring to mock that time, leave empty for normal operation
   UI_WIDTH: 576,
   UI_HEIGHT: 90,
   UI_HEIGHT_BOT: 84,
