@@ -2,11 +2,11 @@
 
 ![Eurofurence HUD](readme/header.png?raw=true)
 
-A smart-glasses HUD that puts your **favorited Eurofurence events** on an [Even G2](https://evenrealities.com) whenever you glance at it. It pulls your personal event list straight from the Eurofurence app via the calendar sync link, renders it to a canvas, and pushes the frames to the glasses display — no phone needed once it's set up.
+A smart-glasses HUD that puts your **favorited Eurofurence events** on an [Even G2](https://evenrealities.com) whenever you glance at it. It pulls your personal event list straight from the Eurofurence app via the calendar sync link, renders it to a canvas, and pushes the frames to the glasses display.
 
 ## The three UI detail levels
 
-The HUD has three detail levels, cycled with a swipe on the glasses (swipe up to use less, swipe down for more). Each shows only events from the current con day — the queue never rolls into tomorrow's events overnight.
+The HUD has three detail levels, cycled with a swipe on the glasses (swipe up to use less, swipe down for more). Each shows only events from the current con day — the list never rolls into tomorrow's events.
 
 ### Extended
 ![Extended mode](readme/glasses_extended.png?raw=true)
@@ -34,7 +34,7 @@ Just the next-up event and the current time — the minimal, at-a-glance view.
 
 ### 1. Get your calendar link
 
-Open the Eurofurence app (favorite a few events first — the HUD shows nothing until you have some), open the bottom menu → **Settings**, and tap the **link-copy icon** next to *"Sync calendar with phone"*.
+Open the Eurofurence app (favorite a few events first — the HUD shows nothing until you have some), open the bottom menu → **Settings**, and tap the **link-copy icon** next to *"Add favorites to calendar"*.
 
 ![Getting the calendar link](readme/how_to_get_calendar_url.jpg?raw=true)
 
@@ -47,7 +47,7 @@ Open the HUD app's phone screen and paste the link into the calendar field:
 ![Phone setup screen](readme/phone_ui.png?raw=true)
 
 1. Paste the `.ics` URL and press **Sync & Save**.
-2. *(Optional)* Pick your **attendee type** — Regular Attendee, Contributor, Sponsor, or Super-Sponsor/Staff. This gates which venue events the Extended view counts as open (e.g. sponsor-only club hours).
+2. *(Optional)* Pick your **attendee type** — Regular Attendee, Contributor, Sponsor, or Super-Sponsor/Staff. This gates which venue events the Extended view counts as open (e.g. sponsor-only hours).
 3. *(Optional, staff only)* Under **Staff mode**, enter your `ef-skey-…` key and press **Get staff alerts** to receive pager messages on the glasses; press **Stop** to disconnect.
 
 The URL, attendee type and staff key are remembered on the device. The calendar is automatically re-synced every 30 minutes and re-rendered every minute, so you can just put the glasses on and go.
@@ -97,4 +97,4 @@ npm run pack    # wraps dist/ into an .ehpk package
 
 ---
 
-*Built with far too many ribbon pixels by [Fynnley](https://github.com/FynnleyNeko) for [EFNOC](https://www.eurofurence.org). The Even G2 glasses are real; the schedule is not your fault.*
+*Built with far too much effort for a one-off by [Fynnley](https://zerv.al), [Jake](https://jakefox.de) and my trusty companion Shimmer. Have a fun con!*
