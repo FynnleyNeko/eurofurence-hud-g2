@@ -8,94 +8,14 @@ import {
   OsEventTypeList,
 } from "@evenrealities/even_hub_sdk";
 
+import { globals } from "./globals.ts";
+import { constants } from "./constants.ts";
+
 const bridge = await waitForEvenAppBridge();
-
-// GLOBALS
-const MOCK_TIME = ""; // Set to a datestring to mock that time, leave empty for normal operation
-const CON_START = "2026-08-19T02:00:00.000+00:00";
-const UI_WIDTH = 576;
-const UI_HEIGHT = 90;
-const UI_HEIGHT_BOT = 84;
-const SECONDS = 1000;
-const MINUTES = 60 * SECONDS;
-const LATE_GRACE = 15 * MINUTES;
-const DIM_TIMER = 3 * MINUTES;
-const INTERVAL_RENDER = 1 * MINUTES;
-const INTERVAL_SYNC = 30 * MINUTES;
-const THEME_BRIGHT_PRIMARY = "#fff";
-const THEME_BRIGHT_SECONDARY = "#888";
-const THEME_BRIGHT_IMAGES = 0.75;
-const THEME_DARK_PRIMARY = "#888";
-const THEME_DARK_SECONDARY = "#444";
-const THEME_DARK_IMAGES = 0.9;
-const STAFF_PING_URL = "wss://efhudstaff.cub.pink/";
-
-// Attendee type info
-// 0 = Attendee
-// 1 = Contributor
-// 2 = Sponsor
-// 3 = SuperSponsor
-var attendee_type = 0;
-
-// staff system related keys
-var staff_key = undefined;
-
-// warning related states
-var last_sync_worked = false;
-var api_key_set = false;
-
-// UI logic states
-var compact_mode = 2;
-var compact_mode_cur = 2;
-var dimmed_mode = true;
-var dimmed_mode_cur = true;
-
-// Event storage
-var split_raw_events = [];
-var all_events = [];
-var events = [];
-
-// Frame storage (quadrants)
-var tlarr, trarr, blarr, brarr;
-
-// Image assets
-const img_arrow1 = new Image();
-img_arrow1.src = "../assets/arrow1.png";
-const img_arrow2 = new Image();
-img_arrow2.src = "../assets/arrow2.png";
-const img_arrow3 = new Image();
-img_arrow3.src = "../assets/arrow3.png";
-const img_logo = new Image();
-img_logo.src = "../assets/logo.png";
-const img_vr = new Image();
-img_vr.src = "../assets/vrportal.png";
-const club_out = new Image();
-club_out.src = "../assets/club_out.png";
-const club_cch = new Image();
-club_cch.src = "../assets/club_cch.png";
-const club_rad = new Image();
-club_rad.src = "../assets/club_rad.png";
-const img_al = new Image();
-img_al.src = "../assets/artists_lounge.png";
-const img_as = new Image();
-img_as.src = "../assets/artshow.png";
-const img_aa = new Image();
-img_aa.src = "../assets/artists_alley.png";
-const img_dd = new Image();
-img_dd.src = "../assets/dealers_den.png";
-const warn_sync = new Image();
-warn_sync.src = "../assets/wifi_lost.png";
-const warn_key = new Image();
-warn_key.src = "../assets/key_missing.png";
-
-// Time initialization
-const start = new Date(CON_START);
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-var now = new Date();
 
 // Takes a date object and turns it into a string containing "--m" or "--h--m"
 function datefuzzy(date) {
-  let mins = (date.getTime() - now.getTime()) / MINUTES;
+  let mins = (date.getTime() - globals.now.getTime()) / constants.MINUTES;
   let timestring;
 
   if (mins >= 60) {
@@ -197,118 +117,153 @@ function renderUI(width, height) {
   const ctx = canvas.getContext("2d")!;
 
   // Show that we acted on globals
-  compact_mode_cur = compact_mode;
-  dimmed_mode_cur = dimmed_mode;
+  globals.compact_mode_cur = globals.compact_mode;
+  globals.dimmed_mode_cur = globals.dimmed_mode;
 
   // Draw schedule times
-  if (compact_mode > 0) {
-    ctx.fillStyle = dimmed_mode ? THEME_DARK_PRIMARY : THEME_BRIGHT_PRIMARY;
+  if (globals.compact_mode > 0) {
+    ctx.fillStyle = globals.dimmed_mode
+      ? constants.THEME_DARK_PRIMARY
+      : constants.THEME_BRIGHT_PRIMARY;
     ctx.textAlign = "right";
     ctx.font = "15px sans-serif";
-    if (events.length >= 1) ctx.fillText(`${datefuzzy(events[0].at)}`, 60, 22);
-    if (events.length >= 2) ctx.fillText(`${datefuzzy(events[1].at)}`, 60, 47);
-    if (events.length >= 3) ctx.fillText(`${datefuzzy(events[2].at)}`, 60, 72);
+    if (globals.events.length >= 1)
+      ctx.fillText(`${datefuzzy(globals.events[0].at)}`, 60, 22);
+    if (globals.events.length >= 2)
+      ctx.fillText(`${datefuzzy(globals.events[1].at)}`, 60, 47);
+    if (globals.events.length >= 3)
+      ctx.fillText(`${datefuzzy(globals.events[2].at)}`, 60, 72);
   }
 
   // Draw titles
-  ctx.fillStyle = dimmed_mode ? THEME_DARK_SECONDARY : THEME_BRIGHT_SECONDARY;
+  ctx.fillStyle = globals.dimmed_mode
+    ? constants.THEME_DARK_SECONDARY
+    : constants.THEME_BRIGHT_SECONDARY;
   ctx.textAlign = "left";
   ctx.font = "15px sans-serif";
-  if (compact_mode > 0) {
-    if (events.length >= 1)
-      ctx.fillText(`${events[0].loc} ${events[0].name}`, 75, 22);
-    if (events.length >= 2)
-      ctx.fillText(`${events[1].loc} ${events[1].name}`, 75, 47);
-    if (events.length >= 3)
-      ctx.fillText(`${events[2].loc} ${events[2].name}`, 75, 72);
-  } else {
-    if (events.length >= 1)
+  if (globals.compact_mode > 0) {
+    if (globals.events.length >= 1)
       ctx.fillText(
-        `${datefuzzy(events[0].at)} ${events[0].loc} ${events[0].name}`,
+        `${globals.events[0].loc} ${globals.events[0].name}`,
+        75,
+        22,
+      );
+    if (globals.events.length >= 2)
+      ctx.fillText(
+        `${globals.events[1].loc} ${globals.events[1].name}`,
+        75,
+        47,
+      );
+    if (globals.events.length >= 3)
+      ctx.fillText(
+        `${globals.events[2].loc} ${globals.events[2].name}`,
+        75,
+        72,
+      );
+  } else {
+    if (globals.events.length >= 1)
+      ctx.fillText(
+        `${datefuzzy(globals.events[0].at)} ${globals.events[0].loc} ${globals.events[0].name}`,
         0,
         15,
       );
   }
-  if (events.length === 0 && api_key_set)
+  if (globals.events.length === 0 && globals.api_key_set)
     ctx.fillText("No more favorites today!", 0, 15);
 
   // Draw rooms
-  ctx.fillStyle = dimmed_mode ? THEME_DARK_PRIMARY : THEME_BRIGHT_PRIMARY;
+  ctx.fillStyle = globals.dimmed_mode
+    ? constants.THEME_DARK_PRIMARY
+    : constants.THEME_BRIGHT_PRIMARY;
   ctx.textAlign = "left";
   ctx.font = "15px sans-serif";
-  if (compact_mode > 0) {
-    if (events.length >= 1) ctx.fillText(`${events[0].loc}`, 75, 22);
-    if (events.length >= 2) ctx.fillText(`${events[1].loc}`, 75, 47);
-    if (events.length >= 3) ctx.fillText(`${events[2].loc}`, 75, 72);
+  if (globals.compact_mode > 0) {
+    if (globals.events.length >= 1)
+      ctx.fillText(`${globals.events[0].loc}`, 75, 22);
+    if (globals.events.length >= 2)
+      ctx.fillText(`${globals.events[1].loc}`, 75, 47);
+    if (globals.events.length >= 3)
+      ctx.fillText(`${globals.events[2].loc}`, 75, 72);
   } else {
-    if (events.length >= 1)
-      ctx.fillText(`${datefuzzy(events[0].at)} ${events[0].loc}`, 0, 15);
+    if (globals.events.length >= 1)
+      ctx.fillText(
+        `${datefuzzy(globals.events[0].at)} ${globals.events[0].loc}`,
+        0,
+        15,
+      );
   }
 
   // Gracefully handle long titles
   const gradient = ctx.createLinearGradient(
-    UI_WIDTH - 150,
+    constants.UI_WIDTH - 150,
     0,
-    UI_WIDTH - 90,
+    constants.UI_WIDTH - 90,
     0,
   );
   gradient.addColorStop(0, "transparent");
   gradient.addColorStop(1, "black");
   ctx.fillStyle = gradient;
-  ctx.fillRect(UI_WIDTH - 150, 0, 150, 90);
+  ctx.fillRect(constants.UI_WIDTH - 150, 0, 150, 90);
 
   // Draw API key warning
-  if (!api_key_set) {
-    ctx.drawImage(warn_key, 140, 35);
-    ctx.fillStyle = dimmed_mode ? THEME_DARK_PRIMARY : THEME_BRIGHT_PRIMARY;
+  if (!globals.api_key_set) {
+    ctx.drawImage(constants.WARN_KEY, 140, 35);
+    ctx.fillStyle = globals.dimmed_mode
+      ? constants.THEME_DARK_PRIMARY
+      : constants.THEME_BRIGHT_PRIMARY;
     ctx.textAlign = "left";
     ctx.font = "25px sans-serif";
     ctx.fillText("Calendar link not set!", 177, 61);
   }
 
   // Draw clock
-  ctx.fillStyle = dimmed_mode ? THEME_DARK_PRIMARY : THEME_BRIGHT_PRIMARY;
+  ctx.fillStyle = globals.dimmed_mode
+    ? constants.THEME_DARK_PRIMARY
+    : constants.THEME_BRIGHT_PRIMARY;
   ctx.textAlign = "right";
   ctx.font = "15px sans-serif";
   ctx.fillText(`${getClock()}`, width, 15);
-  if (compact_mode > 0) {
-    ctx.fillStyle = dimmed_mode ? THEME_DARK_SECONDARY : THEME_BRIGHT_PRIMARY;
+  if (globals.compact_mode > 0) {
+    ctx.fillStyle = globals.dimmed_mode
+      ? constants.THEME_DARK_SECONDARY
+      : constants.THEME_BRIGHT_PRIMARY;
     ctx.fillText(`${getDay()}`, width, 30);
 
     // Draw event schedule graphic
-    if (events.length >= 3) ctx.drawImage(img_arrow3, 60, 0);
-    if (events.length === 2) ctx.drawImage(img_arrow2, 60, 0);
-    if (events.length === 1) ctx.drawImage(img_arrow1, 60, 0);
+    if (globals.events.length >= 3) ctx.drawImage(constants.IMG_ARROW3, 60, 0);
+    if (globals.events.length === 2) ctx.drawImage(constants.IMG_ARROW2, 60, 0);
+    if (globals.events.length === 1) ctx.drawImage(constants.IMG_ARROW1, 60, 0);
 
     // Draw EF logo
-    ctx.drawImage(img_logo, width - 32, 35);
+    ctx.drawImage(constants.IMG_LOGO, width - 32, 35);
 
     // Draw sync failure warning
-    if (!last_sync_worked) ctx.drawImage(warn_sync, width - 64, 35);
+    if (!globals.last_sync_worked)
+      ctx.drawImage(constants.WARN_SYNC, width - 64, 35);
 
     // Dim image areas to half luminance
-    ctx.fillStyle = dimmed_mode
-      ? `rgba(0,0,0,${THEME_DARK_IMAGES})`
-      : `rgba(0,0,0,${THEME_BRIGHT_IMAGES})`;
-    if (events.length > 0) ctx.fillRect(60, 0, 15, 90); // arrows
+    ctx.fillStyle = globals.dimmed_mode
+      ? `rgba(0,0,0,${constants.THEME_DARK_IMAGES})`
+      : `rgba(0,0,0,${constants.THEME_BRIGHT_IMAGES})`;
+    if (globals.events.length > 0) ctx.fillRect(60, 0, 15, 90); // arrows
     ctx.fillRect(width - 64, 35, 64, 32); // ef logo
   }
 
   // Additional event info wip
   // Design concept: left -> artistry events, right -> entertainment events
-  if (compact_mode === 2) {
+  if (globals.compact_mode === 2) {
     // Icons
-    ctx.drawImage(img_al, 5, 204);
-    ctx.drawImage(img_as, 5, 226);
-    ctx.drawImage(img_aa, 5, 248);
-    ctx.drawImage(img_dd, 5, 270);
-    ctx.drawImage(img_vr, 554, 204);
-    ctx.drawImage(club_cch, 554, 226);
-    ctx.drawImage(club_out, 554, 248);
-    ctx.drawImage(club_rad, 554, 270);
+    ctx.drawImage(constants.IMG_AL, 5, 204);
+    ctx.drawImage(constants.IMG_AS, 5, 226);
+    ctx.drawImage(constants.IMG_AA, 5, 248);
+    ctx.drawImage(constants.IMG_DD, 5, 270);
+    ctx.drawImage(constants.IMG_VR, 554, 204);
+    ctx.drawImage(constants.CLUB_CCH, 554, 226);
+    ctx.drawImage(constants.CLUB_OUT, 554, 248);
+    ctx.drawImage(constants.CLUB_RAD, 554, 270);
 
     // Left leaning text objects (artistry related long-run events)
-    ctx.fillStyle = dimmed_mode ? "#888" : "#fff";
+    ctx.fillStyle = globals.dimmed_mode ? "#888" : "#fff";
     ctx.textAlign = "left";
     ctx.font = "15px sans-serif";
     ctx.fillText(artistsLoungeInfo(), 27, 218);
@@ -317,7 +272,7 @@ function renderUI(width, height) {
     ctx.fillText(dealersDenInfo(), 27, 284);
 
     // Right leaning text objects (club related long-run events)
-    ctx.fillStyle = dimmed_mode ? "#888" : "#fff";
+    ctx.fillStyle = globals.dimmed_mode ? "#888" : "#fff";
     ctx.textAlign = "right";
     ctx.font = "15px sans-serif";
     ctx.fillText(vrPortalInfo(), 549, 218);
@@ -326,11 +281,16 @@ function renderUI(width, height) {
     ctx.fillText(codaClubInfo(), 549, 284);
 
     // Dim image areas to half luminance
-    ctx.fillStyle = dimmed_mode
-      ? `rgba(0,0,0,${THEME_DARK_IMAGES})`
-      : `rgba(0,0,0,${THEME_BRIGHT_IMAGES})`;
-    ctx.fillRect(0, 288 - UI_HEIGHT_BOT, 27, UI_HEIGHT_BOT); // left
-    ctx.fillRect(width - 27, 288 - UI_HEIGHT_BOT, 27, UI_HEIGHT_BOT); // right
+    ctx.fillStyle = globals.dimmed_mode
+      ? `rgba(0,0,0,${constants.THEME_DARK_IMAGES})`
+      : `rgba(0,0,0,${constants.THEME_BRIGHT_IMAGES})`;
+    ctx.fillRect(0, 288 - constants.UI_HEIGHT_BOT, 27, constants.UI_HEIGHT_BOT); // left
+    ctx.fillRect(
+      width - 27,
+      288 - constants.UI_HEIGHT_BOT,
+      27,
+      constants.UI_HEIGHT_BOT,
+    ); // right
   }
 
   return canvas;
@@ -339,20 +299,25 @@ function renderUI(width, height) {
 // Divide main canvas into quadrants
 function split(where, fullCanvas) {
   const canvas = document.createElement("canvas");
-  canvas.width = UI_WIDTH / 2;
+  canvas.width = constants.UI_WIDTH / 2;
   if (where.startsWith("t")) {
-    canvas.height = UI_HEIGHT;
+    canvas.height = constants.UI_HEIGHT;
   } else {
-    canvas.height = UI_HEIGHT_BOT;
+    canvas.height = constants.UI_HEIGHT_BOT;
   }
 
   const ctx = canvas.getContext("2d")!;
 
   if (where === "tl") ctx.drawImage(fullCanvas, 0, 0);
-  if (where === "tr") ctx.drawImage(fullCanvas, -(UI_WIDTH / 2), 0);
-  if (where === "bl") ctx.drawImage(fullCanvas, 0, -288 + UI_HEIGHT_BOT);
+  if (where === "tr") ctx.drawImage(fullCanvas, -(constants.UI_WIDTH / 2), 0);
+  if (where === "bl")
+    ctx.drawImage(fullCanvas, 0, -288 + constants.UI_HEIGHT_BOT);
   if (where === "br")
-    ctx.drawImage(fullCanvas, -(UI_WIDTH / 2), -288 + UI_HEIGHT_BOT);
+    ctx.drawImage(
+      fullCanvas,
+      -(constants.UI_WIDTH / 2),
+      -288 + constants.UI_HEIGHT_BOT,
+    );
 
   return canvas;
 }
@@ -365,33 +330,33 @@ async function canvasToPng(canvas, target) {
   for (let i = 0; i < binary.length; i++) {
     bytes.push(binary.charCodeAt(i));
   }
-  if (target === "tl") tlarr = bytes;
-  if (target === "tr") trarr = bytes;
-  if (target === "bl") blarr = bytes;
-  if (target === "br") brarr = bytes;
+  return bytes;
 }
 
 // Clock string helper
 function getClock() {
-  return `${dayNames[now.getDay()]} ${(now.getHours() < 10 ? "0" : "") + now.getHours()}:${(now.getMinutes() < 10 ? "0" : "") + now.getMinutes()}`;
+  return `${constants.DAYNAMES[globals.now.getDay()]} ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}`;
 }
 
 // Con day string helper
 function getDay() {
-  return `Day ${now.getDate() - start.getDate() >= 0 ? now.getDate() - start.getDate() + 1 : now.getDate() - start.getDate()}`;
+  return `Day ${globals.now.getDate() - constants.START.getDate() >= 0 ? globals.now.getDate() - constants.START.getDate() + 1 : globals.now.getDate() - constants.START.getDate()}`;
 }
 
 // Main render manager: update time -> throw out old events (replenish queue if needed) -> render -> split -> send
 async function render() {
   const render_start = new Date();
-  if (MOCK_TIME !== "") {
-    now = new Date(MOCK_TIME);
+  if (constants.MOCK_TIME !== "") {
+    globals.now = new Date(constants.MOCK_TIME);
   } else {
-    now = new Date();
+    globals.now = new Date();
   }
 
-  if (events[0]?.at.getTime() - now.getTime() < -LATE_GRACE) {
-    events.shift();
+  if (
+    globals.events[0]?.at.getTime() - globals.now.getTime() <
+    -constants.LATE_GRACE
+  ) {
+    globals.events.shift();
     replenishQueue();
   }
 
@@ -401,11 +366,11 @@ async function render() {
   const frame_bl = split("bl", fullrender);
   const frame_br = split("br", fullrender);
 
-  await Promise.all([
-    canvasToPng(frame_tl, "tl"),
-    canvasToPng(frame_tr, "tr"),
-    canvasToPng(frame_bl, "bl"),
-    canvasToPng(frame_br, "br"),
+  const [tlarr, trarr, blarr, brarr] = await Promise.all([
+    canvasToPng(frame_tl),
+    canvasToPng(frame_tr),
+    canvasToPng(frame_bl),
+    canvasToPng(frame_br),
   ]);
 
   await Promise.all([
@@ -441,41 +406,42 @@ async function render() {
 
   const render_end = new Date();
   document.getElementById("results_last_render").innerText =
-    `Last render (every minute): ${(now.getHours() < 10 ? "0" : "") + now.getHours()}:${(now.getMinutes() < 10 ? "0" : "") + now.getMinutes()}:${(now.getSeconds() < 10 ? "0" : "") + now.getSeconds()} (${render_end.getTime() - render_start.getTime()} ms)`;
+    `Last render (every minute): ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} (${render_end.getTime() - render_start.getTime()} ms)`;
 }
 
 // Handles filling the displayed events queue recursively from the raw event data
 function replenishQueue() {
-  if (events.length < 3) {
+  if (globals.events.length < 3) {
     let day_end = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
+      globals.now.getFullYear(),
+      globals.now.getMonth(),
+      globals.now.getDate() + 1,
       4,
     );
     let next_up = new Date("2069-04-20T00:00:00.000+00:00");
     let next_index;
 
-    for (var i = 0; i < all_events.length; i++) {
-      if (all_events[i].at.getTime() - next_up.getTime() < 0) {
+    for (var i = 0; i < globals.all_events.length; i++) {
+      if (globals.all_events[i].at.getTime() - next_up.getTime() < 0) {
         // Is this the soonest event seen so far in the loop?
         if (
-          !all_events[i].queued &&
-          all_events[i].at.getTime() - now.getTime() > -LATE_GRACE
+          !globals.all_events[i].queued &&
+          globals.all_events[i].at.getTime() - globals.now.getTime() >
+            -constants.LATE_GRACE
         ) {
           // Has it not been queued before and isn't already over? (15 min start grace)
-          if (all_events[i].at.getTime() < day_end.getTime()) {
+          if (globals.all_events[i].at.getTime() < day_end.getTime()) {
             // Is it "today" (con days go until 2AM technically, to fix clubs rolling)
             next_index = i;
-            next_up = all_events[i].at;
+            next_up = globals.all_events[i].at;
           }
         }
       }
     }
 
     if (next_index !== undefined) {
-      events.push(all_events[next_index]);
-      all_events[next_index].queued = true;
+      globals.events.push(globals.all_events[next_index]);
+      globals.all_events[next_index].queued = true;
       replenishQueue();
     }
   }
@@ -483,8 +449,8 @@ function replenishQueue() {
 
 // Takes the split up raw events array and turns them into the objects needed for the queue
 async function parseEvents() {
-  all_events = []; // Clear before repopulating
-  split_raw_events.forEach((event) => {
+  globals.all_events = []; // Clear before repopulating
+  globals.split_raw_events.forEach((event) => {
     let at = event.match(/^DTSTART:.*$/gm);
     let loc = event.match(/^LOCATION:.*$/gm);
     let name = event.match(/^SUMMARY:.*$/gm);
@@ -501,7 +467,7 @@ async function parseEvents() {
       "$1-$2-$3T$4:$5:$6.000+00:00",
     );
 
-    all_events.push({
+    globals.all_events.push({
       at: new Date(time),
       loc: loc[0]
         .replace("LOCATION:", "")
@@ -513,7 +479,7 @@ async function parseEvents() {
     });
   });
   document.getElementById("results_last_sync").innerText =
-    `Last sync (every 30 mins): ${(now.getHours() < 10 ? "0" : "") + now.getHours()}:${(now.getMinutes() < 10 ? "0" : "") + now.getMinutes()}:${(now.getSeconds() < 10 ? "0" : "") + now.getSeconds()} (${all_events.length} Events)`;
+    `Last sync (every 30 mins): ${(globals.now.getHours() < 10 ? "0" : "") + globals.now.getHours()}:${(globals.now.getMinutes() < 10 ? "0" : "") + globals.now.getMinutes()}:${(globals.now.getSeconds() < 10 ? "0" : "") + globals.now.getSeconds()} (${globals.all_events.length} Events)`;
 
   replenishQueue();
   render();
@@ -524,18 +490,18 @@ async function updateInfo() {
   const res = await fetch(await bridge.getLocalStorage("CALENDAR_URL"));
 
   if (!res.ok) {
-    last_sync_worked = false;
+    globals.last_sync_worked = false;
     return;
   } else {
-    last_sync_worked = true;
+    globals.last_sync_worked = true;
   }
 
   const text = await res.text();
   if (text.includes("BEGIN:VCALENDAR")) {
-    split_raw_events = []; // Clear before repopulating
+    globals.split_raw_events = []; // Clear before repopulating
     let temp = text.split("BEGIN:VEVENT");
     temp.forEach((event) => {
-      split_raw_events.push(
+      globals.split_raw_events.push(
         event
           .split("\n")
           .filter(
@@ -554,9 +520,9 @@ async function updateInfo() {
 // Define initial UI
 const text = new TextContainerProperty({
   xPosition: 0,
-  yPosition: UI_HEIGHT,
-  width: UI_WIDTH,
-  height: 288 - UI_HEIGHT - UI_HEIGHT_BOT,
+  yPosition: constants.UI_HEIGHT,
+  width: constants.UI_WIDTH,
+  height: 288 - constants.UI_HEIGHT - constants.UI_HEIGHT_BOT,
   borderWidth: 0,
   paddingLength: 4,
   containerID: 1,
@@ -567,32 +533,32 @@ const text = new TextContainerProperty({
 const tleft = new ImageContainerProperty({
   xPosition: 0,
   yPosition: 0,
-  width: UI_WIDTH / 2,
-  height: UI_HEIGHT,
+  width: constants.UI_WIDTH / 2,
+  height: constants.UI_HEIGHT,
   containerID: 2,
   containerName: "tleft",
 });
 const tright = new ImageContainerProperty({
-  xPosition: UI_WIDTH / 2,
+  xPosition: constants.UI_WIDTH / 2,
   yPosition: 0,
-  width: UI_WIDTH / 2,
-  height: UI_HEIGHT,
+  width: constants.UI_WIDTH / 2,
+  height: constants.UI_HEIGHT,
   containerID: 3,
   containerName: "tright",
 });
 const bleft = new ImageContainerProperty({
   xPosition: 0,
-  yPosition: 288 - UI_HEIGHT_BOT,
-  width: UI_WIDTH / 2,
-  height: UI_HEIGHT_BOT,
+  yPosition: 288 - constants.UI_HEIGHT_BOT,
+  width: constants.UI_WIDTH / 2,
+  height: constants.UI_HEIGHT_BOT,
   containerID: 4,
   containerName: "bleft",
 });
 const bright = new ImageContainerProperty({
-  xPosition: UI_WIDTH / 2,
-  yPosition: 288 - UI_HEIGHT_BOT,
-  width: UI_WIDTH / 2,
-  height: UI_HEIGHT_BOT,
+  xPosition: constants.UI_WIDTH / 2,
+  yPosition: 288 - constants.UI_HEIGHT_BOT,
+  width: constants.UI_WIDTH / 2,
+  height: constants.UI_HEIGHT_BOT,
   containerID: 5,
   containerName: "bright",
 });
@@ -613,15 +579,15 @@ const unsubscribe = bridge.onEvenHubEvent((event) => {
 
   // Tap to undim the UI for 3 minutes
   if (event.jsonData.eventType === undefined) {
-    if (dimmed_mode) {
-      dimmed_mode = false;
+    if (globals.dimmed_mode) {
+      globals.dimmed_mode = false;
       setTimeout(() => {
-        dimmed_mode = true;
-      }, DIM_TIMER);
+        globals.dimmed_mode = true;
+      }, constants.DIM_TIMER);
     } else {
-      dimmed_mode = true;
+      globals.dimmed_mode = true;
     }
-    if (dimmed_mode !== dimmed_mode_cur) {
+    if (globals.dimmed_mode !== globals.dimmed_mode_cur) {
       render();
     }
     return;
@@ -629,8 +595,8 @@ const unsubscribe = bridge.onEvenHubEvent((event) => {
 
   // Swipe up to decrease detail level
   if (event.jsonData.eventType === 1) {
-    if (compact_mode > 0) compact_mode--;
-    if (compact_mode !== compact_mode_cur) {
+    if (globals.compact_mode > 0) globals.compact_mode--;
+    if (globals.compact_mode !== globals.compact_mode_cur) {
       render();
     }
     return;
@@ -638,8 +604,8 @@ const unsubscribe = bridge.onEvenHubEvent((event) => {
 
   // Swipe down to increase detail level
   if (event.jsonData.eventType === 2) {
-    if (compact_mode < 2) compact_mode++;
-    if (compact_mode !== compact_mode_cur) {
+    if (globals.compact_mode < 2) globals.compact_mode++;
+    if (globals.compact_mode !== globals.compact_mode_cur) {
       render();
     }
     return;
@@ -678,7 +644,7 @@ document.getElementById("sync").addEventListener("click", function (event) {
       "CALENDAR_URL",
       document.querySelector<HTMLInputElement>("#url").value,
     );
-    api_key_set = true;
+    globals.api_key_set = true;
     updateInfo();
   }
 });
@@ -691,8 +657,9 @@ document
       "ATTENDEE_TYPE",
       document.querySelector<HTMLInputElement>("#attendee_type").value,
     );
-    attendee_type =
-      Number(document.querySelector<HTMLInputElement>("#attendee_type").value);
+    globals.attendee_type = Number(
+      document.querySelector<HTMLInputElement>("#attendee_type").value,
+    );
   });
 
 // Register listener for staff mode init button
@@ -723,10 +690,10 @@ async function setFromBridge() {
         "https://app.eurofurence.org/EF30/Api/Events/Favorites/calendar.ics/?token=",
       )
   ) {
-    api_key_set = true;
+    globals.api_key_set = true;
     updateInfo();
   } else {
-    api_key_set = false;
+    globals.api_key_set = false;
   }
 
   document.querySelector<HTMLInputElement>("#staffkey").value =
@@ -742,11 +709,11 @@ async function setFromBridge() {
   if (restored_attendee_type !== "") {
     document.querySelector<HTMLInputElement>("#attendee_type").value =
       restored_attendee_type;
-    attendee_type = Number(restored_attendee_type);
+    globals.attendee_type = Number(restored_attendee_type);
   }
 }
 
 render();
 setFromBridge();
-const global_render_interval = setInterval(render, INTERVAL_RENDER);
-const global_sync_interval = setInterval(updateInfo, INTERVAL_SYNC);
+const global_render_interval = setInterval(render, constants.INTERVAL_RENDER);
+const global_sync_interval = setInterval(updateInfo, constants.INTERVAL_SYNC);
