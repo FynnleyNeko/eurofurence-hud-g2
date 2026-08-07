@@ -35,7 +35,7 @@ export function imageFromURL(src) {
 }
 
 // Turn canvas into frame data for the G2
-export async function canvasToPng(canvas, target) {
+export async function canvasToPng(canvas) {
   const dataUrl = await canvas.toDataURL("image/png");
   const binary = await atob(dataUrl.split(",")[1]);
   const bytes: number[] = [];
